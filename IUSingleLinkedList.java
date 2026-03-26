@@ -63,14 +63,44 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public void addAfter(T element, T target) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addAfter'");
+        Node<T> newNode = new Node<T>(element);
+
+        Node<T> currNode = head;
+
+        while (currNode != null && !currNode.getElement().equals(target)) {
+            currNode = currNode.getNext();
+        }
+
+        if (currNode == null) {
+            throw new NoSuchElementException();
+        } else {
+            newNode.setNext(currNode.getNext());
+            currNode.setNext(newNode);
+        }
+        size++;
+        modCount++;
+
     }
 
     @Override
     public void add(int index, T element) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'add'");
+        if (index > size || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Node<T> newNode = new Node<T>(element);
+
+        Node<T> currNode = head;
+
+        for (int i = 0; i < index - 1; i++) {
+            currNode = currNode.getNext();
+        }
+
+        newNode.setNext(currNode.getNext());
+        currNode.setNext(newNode);
+
+        size++;
+        modCount++;
     }
 
     @Override
@@ -127,20 +157,69 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T remove(T element) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'remove'");
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        Node<T> currNode = head;
+        Node<T> prevNode = null;
+
+        while (currNode != null && !currNode.getElement().equals(element)) {
+            prevNode = currNode;
+            currNode = currNode.getNext();
+        }
+
+        if (currNode == null) {
+            throw new NoSuchElementException();
+        } else if (currNode == head) { // special case of first element
+            return removeFirst();
+        } else if (currNode == tail) { // special case of last element
+            return removeLast();
+        } else { // general case
+            prevNode.setNext(currNode.getNext());
+            size--;
+            modCount++;
+            return currNode.getElement();
+        }
+
     }
 
     @Override
     public T remove(int index) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'remove'");
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        if (index > size - 1 || index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        if (index == 0) {
+            return removeFirst();
+        } else if (index == size - 1) {
+            return removeLast();
+        } else if(size == 1) {
+            return removeFirst();
+        } else {
+
+            Node<T> currNode = head;
+            Node<T> prevNode = null;
+
+            for(int i = 0; i < index - 1; i++) {
+                prevNode = currNode;
+                currNode = currNode.getNext();
+            }
+
+            prevNode.setNext(currNode.getNext());
+            size--;
+            modCount++;
+            return currNode.getElement();
+            
+        }
     }
 
     @Override
     public void set(int index, T element) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'set'");
+        add(index, element);
     }
 
     @Override
@@ -226,28 +305,29 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
     }
 
     @Override
-	public String toString() {
-		// String str = "[";
-		// appending with += is bad in this case, because it creates a copy of the prior String
-		// concatenation is 0(n^2), only fine with a few things, not lists
-		StringBuilder str = new StringBuilder();
-		str.append("[");
+    public String toString() {
+        // String str = "[";
+        // appending with += is bad in this case, because it creates a copy of the prior
+        // String
+        // concatenation is 0(n^2), only fine with a few things, not lists
+        StringBuilder str = new StringBuilder();
+        str.append("[");
 
+        for (T element : this) {
+            str.append(element.toString());
+            str.append(", ");
+        }
 
-		for(T element : this) {
-			str.append(element.toString());
-			str.append(", ");
-		}
-		
-		// remove trailing comma
-		if (str.length() > 1) {  // !isEmpty or size() > 0 also works
-			str.delete(str.length() - 2, str.length()); // str.length() - 2, is starting index to delete, str.length() is ending index to delete (Exclusive)
-		}
+        // remove trailing comma
+        if (str.length() > 1) { // !isEmpty or size() > 0 also works
+            str.delete(str.length() - 2, str.length()); // str.length() - 2, is starting index to delete, str.length()
+                                                        // is ending index to delete (Exclusive)
+        }
 
-		// this toString() works with ALL collections as all require Iterators
-		str.append("]");
-		return str.toString();
-	}
+        // this toString() works with ALL collections as all require Iterators
+        str.append("]");
+        return str.toString();
+    }
 
     @Override
     public ListIterator<T> listIterator() {
@@ -338,4 +418,5 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
         }
 
     }
+
 }
