@@ -212,7 +212,7 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
             prevNode.setNext(currNode.getNext());
             size--;
             modCount++;
-            return currNode.getElement();
+            return retNode.getElement();
             
         }
     }
